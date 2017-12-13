@@ -44,9 +44,11 @@
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
-            android:process=":remote"></service>
+            android:process=":remote" />
+        <service android:name=".service.AutoUpdateService"></service>
 
-        <activity android:name=".WeatherActivity"></activity>
+        <activity android:name=".WeatherActivity" />
+        <activity android:name=".PermissionsActivity"></activity>
     </application>
 
 </manifest>
