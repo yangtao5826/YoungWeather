@@ -33,19 +33,19 @@
                 android:layout_centerInParent="true">
 
                 <TextView
-                    android:id="@+id/aqi_text"
+                    android:id="@+id/now_other_fl"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textColor="#fff"
-                    android:textSize="40sp"
+                    android:textSize="30sp"
                     />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="AQI指数"
+                    android:text="体感温度"
                     android:textColor="#fff"/>
 
             </LinearLayout>
@@ -64,19 +64,50 @@
                 android:layout_centerInParent="true">
 
                 <TextView
-                    android:id="@+id/pm25_text"
+                    android:id="@+id/now_other_hum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textColor="#fff"
-                    android:textSize="40sp"
+                    android:textSize="30sp"
                     />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="PM2.5指数"
+                    android:text="相对湿度"
+                    android:textColor="#fff"
+                    />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <TextView
+                    android:id="@+id/now_other_wind"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="#fff"
+                    android:textSize="25sp"
+                    />
+
+                <TextView
+                    android:id="@+id/now_other_wind_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:textColor="#fff"
                     />
 

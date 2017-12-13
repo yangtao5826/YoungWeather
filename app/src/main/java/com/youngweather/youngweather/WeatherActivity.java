@@ -1,5 +1,6 @@
 package com.youngweather.youngweather;
 
+import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.youngweather.youngweather.gson.Forecast;
+import com.youngweather.youngweather.gson.LifeStyle;
 import com.youngweather.youngweather.gson.Weather;
 import com.youngweather.youngweather.util.HttpUtil;
 import com.youngweather.youngweather.util.Utility;
@@ -32,6 +34,7 @@ public class WeatherActivity extends AppCompatActivity {
     public DrawerLayout drawerLayout;
 
     public SwipeRefreshLayout swipeRefresh;
+    private ProgressDialog progressDialog;
 
     private ScrollView weatherLayout;
 
@@ -45,11 +48,18 @@ public class WeatherActivity extends AppCompatActivity {
 
     private TextView weatherInfoText;
 
+    private TextView drsgText;
+    private TextView fluText;
+    private TextView travText;
+    private TextView uvText;
+    private TextView airText;
+
+    private TextView nowOtherFl;
+    private TextView nowOtherHum;
+    private TextView nowOtherWind;
+    private TextView nowOtherWindText;
+
     private LinearLayout forecastLayout;
-
-    private TextView aqiText;
-
-    private TextView pm25Text;
 
     private TextView comfortText;
 
@@ -79,11 +89,18 @@ public class WeatherActivity extends AppCompatActivity {
         degreeText = (TextView) findViewById(R.id.degree_text);
         weatherInfoText = (TextView) findViewById(R.id.weather_info_text);
         forecastLayout = (LinearLayout) findViewById(R.id.forecast_layout);
-        aqiText = (TextView) findViewById(R.id.aqi_text);
-        pm25Text = (TextView) findViewById(R.id.pm25_text);
         comfortText = (TextView) findViewById(R.id.comfort_text);
         carWashText = (TextView) findViewById(R.id.car_wash_text);
         sportText = (TextView) findViewById(R.id.sport_text);
+        drsgText  = findViewById(R.id.drsg_text);
+        fluText = findViewById(R.id.flu_text);
+        travText = findViewById(R.id.trav_text);
+        uvText = findViewById(R.id.uv_text);
+        airText = findViewById(R.id.air_text);
+        nowOtherFl = findViewById(R.id.now_other_fl);
+        nowOtherHum = findViewById(R.id.now_other_hum);
+        nowOtherWind = findViewById(R.id.now_other_wind);
+        nowOtherWindText = findViewById(R.id.now_other_wind_text);
         //swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         //swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         //drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -97,6 +114,7 @@ public class WeatherActivity extends AppCompatActivity {
             showWeatherInfo(weather);
         } else {
             // 无缓存时去服务器查询天气
+            showProgressDialog();
             mWeatherId = getIntent().getStringExtra("location");
             weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(mWeatherId);
@@ -139,6 +157,7 @@ public class WeatherActivity extends AppCompatActivity {
                             editor.putString("weather", responseText);
                             editor.apply();
                             mWeatherId = weather.basic.cid;
+                            closeProgressDialog();
                             showWeatherInfo(weather);
                         } else {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
@@ -195,7 +214,7 @@ public class WeatherActivity extends AppCompatActivity {
      */
     private void showWeatherInfo(Weather weather) {
         String cityName = weather.basic.location;
-        String updateTime = weather.update.loc;
+        String updateTime = weather.update.loc.split(" ")[1];
         String degree = weather.now.tmp + "℃";
         String weatherInfo = weather.now.condText;
         titleCity.setText(cityName);
@@ -215,15 +234,54 @@ public class WeatherActivity extends AppCompatActivity {
             minText.setText(forecast.tmpMin);
             forecastLayout.addView(view);
         }
-        String comfort = "舒适度：" + weather.lifeStyleList.get(0).txt;
-        String carWash = "洗车指数：" + weather.lifeStyleList.get(1).txt;
-        String sport = "运行建议：" + weather.lifeStyleList.get(2).txt;
-        comfortText.setText(comfort);
-        carWashText.setText(carWash);
-        sportText.setText(sport);
+        nowOtherWind.setText(weather.now.windSc);
+        nowOtherWindText.setText(weather.now.windDir);
+        nowOtherHum.setText(weather.now.hum);
+        nowOtherFl.setText(weather.now.fl+"℃");
+        for (LifeStyle lifeStyle : weather.lifeStyleList){
+            if (lifeStyle.typeMode.equals("air")){
+                airText.setText("空气污染扩散条件指数："+lifeStyle.brf+"\n"+lifeStyle.txt);
+            }else if (lifeStyle.typeMode.equals("comf")){
+                comfortText.setText("舒适度指数："+lifeStyle.brf+"\n"+lifeStyle.txt);
+            }else if (lifeStyle.typeMode.equals("drsg")){
+                drsgText.setText("穿衣指数："+lifeStyle.brf+"\n"+lifeStyle.txt);
+            }else if (lifeStyle.typeMode.equals("flu")){
+                fluText.setText("感冒指数："+lifeStyle.brf+"\n"+lifeStyle.txt);
+            }else if (lifeStyle.typeMode.equals("cw")){
+                carWashText.setText("洗车指数："+lifeStyle.brf+"\n"+lifeStyle.txt);
+            }else if (lifeStyle.typeMode.equals("sport")){
+                sportText.setText("运动指数："+lifeStyle.brf+"\n"+lifeStyle.txt);
+            }else if (lifeStyle.typeMode.equals("uv")){
+                uvText.setText("紫外线指数："+lifeStyle.brf+"\n"+lifeStyle.txt);
+            }else if (lifeStyle.typeMode.equals("trav")){
+                travText.setText("旅游指数："+lifeStyle.brf+"\n"+lifeStyle.txt);
+            }
+        }
         weatherLayout.setVisibility(View.VISIBLE);
+
 //        Intent intent = new Intent(this, AutoUpdateService.class);
 //        startService(intent);
+    }
+
+    /**
+     * 关闭加载进度条
+     */
+    private void closeProgressDialog() {
+        if (progressDialog!=null){
+            progressDialog.dismiss();
+        }
+    }
+
+    /**
+     * 显示加载进度条
+     */
+    private void showProgressDialog() {
+        if (progressDialog == null){
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("正在加载，请稍后...");
+            progressDialog.setCanceledOnTouchOutside(false);
+        }
+        progressDialog.show();
     }
 
 }

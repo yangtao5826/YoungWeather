@@ -272,6 +272,9 @@ public class ChooseAreaFragment extends Fragment{
         });
     }
 
+    /**
+     * 关闭加载进度条
+     */
     private void closeProgressDialog() {
         if (progressDialog!=null){
             progressDialog.dismiss();

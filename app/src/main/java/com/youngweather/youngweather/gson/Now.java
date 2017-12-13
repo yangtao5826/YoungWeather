@@ -11,7 +11,7 @@ public class Now {
     public String cloud;//云量
     @SerializedName("cond_code")
     public String condCode;//实况天气状况代码
-    @SerializedName("cond_text")
+    @SerializedName("cond_txt")
     public String condText;//实况天气状况描述
     public String fl;//体感温度，默认单位：摄氏度
     public String hum;//相对湿度
