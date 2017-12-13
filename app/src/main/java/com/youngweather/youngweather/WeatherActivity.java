@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.youngweather.youngweather.gson.Forecast;
 import com.youngweather.youngweather.gson.LifeStyle;
 import com.youngweather.youngweather.gson.Weather;
+import com.youngweather.youngweather.service.AutoUpdateService;
 import com.youngweather.youngweather.util.HttpUtil;
 import com.youngweather.youngweather.util.Utility;
 import java.io.IOException;
@@ -110,8 +111,10 @@ public class WeatherActivity extends AppCompatActivity {
         if (weatherString != null) {
             // 有缓存时直接解析天气数据
             Weather weather = Utility.handleWeatherResponse(weatherString);
-            mWeatherId = weather.basic.cid;
-            showWeatherInfo(weather);
+            if (weather!=null){
+                mWeatherId = weather.basic.cid;
+                showWeatherInfo(weather);
+            }
         } else {
             // 无缓存时去服务器查询天气
             showProgressDialog();
@@ -259,8 +262,11 @@ public class WeatherActivity extends AppCompatActivity {
         }
         weatherLayout.setVisibility(View.VISIBLE);
 
-//        Intent intent = new Intent(this, AutoUpdateService.class);
-//        startService(intent);
+        /**
+         * 启动自动更新
+         */
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
     /**
