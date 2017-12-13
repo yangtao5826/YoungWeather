@@ -98,7 +98,13 @@ public class ChooseAreaFragment extends Fragment{
                     queryCounties();
                 }else if (currentLevel == LEVEL_COUNTY){
                     //跳转到天气显示界面
-                    turnToWeather(countyList.get(position).getCountyName());
+                    if (getActivity() instanceof MainActivity){
+                        turnToWeather(countyList.get(position).getCountyName());
+                    }else if (getActivity() instanceof WeatherActivity){
+                        //切换城市
+                        changePlace(countyList.get(position).getCountyName());
+                    }
+
                 }
             }
         });
@@ -117,9 +123,21 @@ public class ChooseAreaFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 String location = mBdLocation.getDistrict();
-                turnToWeather(location);
+                if (getActivity() instanceof MainActivity){
+                    turnToWeather(location);
+                }else if (getActivity() instanceof WeatherActivity){
+                    //切换城市
+                    changePlace(location);
+                }
             }
         });
+    }
+
+    private void changePlace(String countyName) {
+        WeatherActivity activity = (WeatherActivity) getActivity();
+        activity.drawerLayout.closeDrawers();
+        activity.swipeRefresh.setRefreshing(true);
+        activity.requestWeather(countyName);
     }
 
     /**
